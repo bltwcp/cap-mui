@@ -28,9 +28,9 @@ export const GridTotalPanel = ({ rowKey, rows, allColumns, selectedIDs, setSelec
                 const columnBackgroundColor = column.headerStyle.backgroundColor
                 const columnLabel = column.parent ? column.parent.Header : column.Header
                 const totalValue = selectedRows.reduce((acc, cur: any) => {
-                    const originValue = cur.original[columnId]
-                    const value = parseFloat(originValue?.replace(/[^\d.-]/g, '')) || 0
-                    return acc + Math.floor(value * 100) / 100
+                    const originValue = (cur.original[columnId] || '').split('\n')[0]
+                    const value = parseFloat(originValue.replace(/[^\d.-]/g, '')) || 0
+                    return acc + value
                 }, 0)
                 const formatTotalValue = totalValue.toLocaleString('en-US', {
                     minimumFractionDigits: 2,
