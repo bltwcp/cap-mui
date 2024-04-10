@@ -6,6 +6,13 @@ import { Grid } from 'cap-mui'
 
 ## Description
 
+Add the following content to the .env file in the root directory :
+
+```
+REACT_APP_CAPMUI_BASEPATH=
+REACT_APP_CAPMUI_APITOKEN=
+```
+
 ### _Layout_
 
 [Bar](https://github.com/bltwcp/cap-mui/blob/main/docs/Components/Bar.md)
