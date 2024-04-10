@@ -28,8 +28,13 @@ export const GridTotalPanel = ({ rowKey, rows, allColumns, selectedIDs, setSelec
                 const columnBackgroundColor = column.headerStyle.backgroundColor
                 const columnLabel = column.parent ? column.parent.Header : column.Header
                 const totalValue = selectedRows.reduce((acc, cur: any) => {
-                    const originValue = (cur.original[columnId] || '').split('\n')[0]
-                    const value = parseFloat(originValue.replace(/[^\d.-]/g, '')) || 0
+                    const originalValue = cur.original[columnId]
+                    const value =
+                        typeof originalValue === 'string'
+                            ? parseFloat(originalValue.split('\n')[0].replace(/[^\d.-]/g, '')) || 0
+                            : typeof originalValue === 'number'
+                            ? originalValue
+                            : 0
                     return acc + value
                 }, 0)
                 const formatTotalValue = totalValue.toLocaleString('en-US', {
@@ -48,7 +53,7 @@ export const GridTotalPanel = ({ rowKey, rows, allColumns, selectedIDs, setSelec
                             fontSize: 14,
                         }}
                     >
-                        <strong>{columnLabel}</strong>
+                        <strong style={{ marginRight: '10px' }}>{columnLabel}</strong>
                         <span>{formatTotalValue}</span>
                     </div>
                 )
@@ -75,22 +80,27 @@ export const GridTotalPanel = ({ rowKey, rows, allColumns, selectedIDs, setSelec
                     cursor: 'default',
                     display: 'flex',
                     justifyContent: 'space-between',
-                    padding: '8px 10px',
+                    padding: '7px 10px',
                     boxShadow: '0px 4px 6px -6px rgba(0, 0, 0, 0.2)',
                 }}
                 onClick={() => setShowTotal(!showTotal)}
             >
                 <strong>Total</strong>
-                <IconButton sx={{ padding: 0 }} onClick={clearSelectedIDs}>
+                <IconButton
+                    sx={{ padding: 0 }}
+                    onClick={(e) => {
+                        e.stopPropagation()
+                        clearSelectedIDs()
+                    }}
+                >
                     <CloseIcon sx={{ width: 15, height: 15 }} />
                 </IconButton>
             </div>
             <div
                 style={{
                     maxHeight: showTotal ? 300 : 0,
-                    transition: 'max-height 0.3s',
+                    overflowY: showTotal ? 'auto' : 'hidden',
                     minWidth: 230,
-                    overflow: 'auto',
                 }}
             >
                 {renderedTotal}

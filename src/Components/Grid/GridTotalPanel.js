@@ -18,8 +18,12 @@ export const GridTotalPanel = ({ rowKey, rows, allColumns, selectedIDs, setSelec
             const columnBackgroundColor = column.headerStyle.backgroundColor;
             const columnLabel = column.parent ? column.parent.Header : column.Header;
             const totalValue = selectedRows.reduce((acc, cur) => {
-                const originValue = (cur.original[columnId] || '').split('\n')[0];
-                const value = parseFloat(originValue.replace(/[^\d.-]/g, '')) || 0;
+                const originalValue = cur.original[columnId];
+                const value = typeof originalValue === 'string'
+                    ? parseFloat(originalValue.split('\n')[0].replace(/[^\d.-]/g, '')) || 0
+                    : typeof originalValue === 'number'
+                        ? originalValue
+                        : 0;
                 return acc + value;
             }, 0);
             const formatTotalValue = totalValue.toLocaleString('en-US', {
@@ -32,7 +36,7 @@ export const GridTotalPanel = ({ rowKey, rows, allColumns, selectedIDs, setSelec
                     justifyContent: 'space-between',
                     padding: '5px 10px',
                     fontSize: 14,
-                }, children: [_jsx("strong", { children: columnLabel }), _jsx("span", { children: formatTotalValue })] }, columnId));
+                }, children: [_jsx("strong", { style: { marginRight: '10px' }, children: columnLabel }), _jsx("span", { children: formatTotalValue })] }, columnId));
         });
     }, [selectedRows, allColumns]);
     const clearSelectedIDs = () => {
@@ -49,12 +53,14 @@ export const GridTotalPanel = ({ rowKey, rows, allColumns, selectedIDs, setSelec
                     cursor: 'default',
                     display: 'flex',
                     justifyContent: 'space-between',
-                    padding: '8px 10px',
+                    padding: '7px 10px',
                     boxShadow: '0px 4px 6px -6px rgba(0, 0, 0, 0.2)',
-                }, onClick: () => setShowTotal(!showTotal), children: [_jsx("strong", { children: "Total" }), _jsx(IconButton, { sx: { padding: 0 }, onClick: clearSelectedIDs, children: _jsx(CloseIcon, { sx: { width: 15, height: 15 } }) })] }), _jsx("div", { style: {
+                }, onClick: () => setShowTotal(!showTotal), children: [_jsx("strong", { children: "Total" }), _jsx(IconButton, { sx: { padding: 0 }, onClick: (e) => {
+                            e.stopPropagation();
+                            clearSelectedIDs();
+                        }, children: _jsx(CloseIcon, { sx: { width: 15, height: 15 } }) })] }), _jsx("div", { style: {
                     maxHeight: showTotal ? 300 : 0,
-                    transition: 'max-height 0.3s',
+                    overflowY: showTotal ? 'auto' : 'hidden',
                     minWidth: 230,
-                    overflow: 'auto',
                 }, children: renderedTotal })] })) : null;
 };
